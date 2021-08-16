@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+  <head>  
+    <title>Профайл пользователя {{ user }} </title>
+  </head>      
+  <form action="" method="post">{% csrf_token %}
+    <div class="container py-5">        
+      <h1>Все посты пользователя {{ author }} </h1>
+      <h3>Всего постов: {{ count }} </h3>   
+      <article>
+        {% for post in page_obj %}
+          <ul>
+            <li>
+              Автор: {{ author }}
+                <a href="">все посты пользователя</a>
+            </li>
+            <li>
+              Дата публикации: {{ post.pub_date|date:"d E Y" }}
+            </li>
+          </ul>
+          <p>{{ post.text|linebreaksbr }}</p>
+          <a href="{% url 'posts:post_detail' post.pk %}">Подробная информация</a>          
+          {% if post.group.slug == None %}
+            Данный пост не принадлежит ни к одной из групп сайта.
+          {% else %}
+            <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
+          {% endif %}
+        {% endfor %} 
+      </article>
+      {% include 'posts/includes/paginator.html' %}
+    </div>
+  </form>
+{% endblock %}
