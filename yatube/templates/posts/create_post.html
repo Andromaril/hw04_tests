@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% load user_filters %}
 
+{% block title %}
+  {% if is_edit %}
+    Редактирование поста
+  {% else %}
+    Добавление новой записи
+  {% endif %}
+{% endblock  %}
 
 {% block content %}
-  <title>
-    {% if is_edit %}
-      Редактирование поста
-    {% else %}
-      Добавление новой записи
-    {% endif %}
-  </title>
   <h1>
     {% if is_edit %}
       Редактирование поста

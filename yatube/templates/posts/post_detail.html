@@ -1,43 +1,41 @@
-
 {% extends 'base.html' %}
 
+{% block title %}
+  Пост {{ post.text|truncatechars:30 }}
+{% endblock %}
 
 {% block content %}
-  <head>  
-    <!-- Подключены иконки, стили и заполенены мета теги -->
-    <title>Пост {{ post.text|truncatechars:30 }}</title>
-  </head>
   <div class="row">
     <aside class="col-12 col-md-3">
       <ul class="list-group list-group-flush">
         <li class="list-group-item">
-            Дата публикации:  {{ post.pub_date|date:"d E Y" }}
+          Дата публикации:  {{ post.pub_date|date:"d E Y" }}
         </li>
-          <!-- если у поста нет группа -->   
-          {% if post.group == None %}
-            Данный пост не принадлежит ни к одной из групп сайта.
-          {% else %}
-            <li class="list-group-item">
-              Группа: {{ post.group }}
-                <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
-          {% endif %}
-            </li>
+        <!-- если у поста нет группа -->   
+        {% if post.group is None %}
+          Данный пост не принадлежит ни к одной из групп сайта.
+        {% else %}
           <li class="list-group-item">
-            Автор: {{ post.author }}
+            Группа: {{ post.group }}
+              <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
+        {% endif %}
           </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            Всего постов автора:  <span >{{ count }}</span>
-          </li>
-          <li class="list-group-item">
-            <a href="{% url 'posts:profile' username=post.author %}">
-              Все посты пользователя
-            </a>
-          </li>
-      </ul>
-    </aside>
-    <article class="col-12 col-md-9">
-      <p>{{ post.text|linebreaksbr }}</p>
-    </article>
+        <li class="list-group-item">
+          Автор: {{ post.author }}
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Всего постов автора:  <span >{{ count }}</span>
+        </li>
+        <li class="list-group-item">
+          <a href="{% url 'posts:profile' username=post.author %}">
+            Все посты пользователя
+          </a>
+      </li>
+    </ul>
+  </aside>
+  <article class="col-12 col-md-9">
+    <p>{{ post.text|linebreaksbr }}</p>
+  </article>
   </div> 
 {% if post.author == request.user %}
 <form method="post" action="{% url 'posts:post_edit' post.pk %}">{% csrf_token %}  

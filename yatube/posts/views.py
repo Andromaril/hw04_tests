@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -14,7 +15,7 @@ def index(request):
     """View - функция для главной страницы проекта."""
 
     posts = Post.objects.all()
-    paginator = Paginator(posts, 10)
+    paginator = Paginator(posts, settings.PAGINATOR)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -28,7 +29,7 @@ def group_posts(request, slug):
 
     group = get_object_or_404(Group, slug=slug)
     posts = Post.objects.filter(group=group)
-    paginator = Paginator(posts, 10)
+    paginator = Paginator(posts, settings.PAGINATOR)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -47,7 +48,7 @@ def profile(request, username):
 
     author = get_object_or_404(User, username=username)
     count = author.posts.all().count()
-    paginator = Paginator(author.posts.all(), 10)
+    paginator = Paginator(author.posts.all(), settings.PAGINATOR)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -99,7 +100,6 @@ def post_edit(request, post_id):
         form = PostForm(request.POST or None, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
             post.save()
             return redirect('posts:post_detail', post_id)
     return render(request, 'posts/create_post.html',

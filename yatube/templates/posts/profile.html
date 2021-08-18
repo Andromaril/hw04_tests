@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
+{% block title %}
+  Профайл пользователя {{ user }}
+{% endblock %}
 
-{% block content %}
-  <head>  
-    <title>Профайл пользователя {{ user }} </title>
-  </head>      
+{% block content %}  
   <form action="" method="post">{% csrf_token %}
     <div class="container py-5">        
       <h1>Все посты пользователя {{ author }} </h1>
@@ -22,7 +22,7 @@
           </ul>
           <p>{{ post.text|linebreaksbr }}</p>
           <a href="{% url 'posts:post_detail' post.pk %}">Подробная информация</a>          
-          {% if post.group.slug == None %}
+          {% if post.group.slug is None %}
             Данный пост не принадлежит ни к одной из групп сайта.
           {% else %}
             <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>

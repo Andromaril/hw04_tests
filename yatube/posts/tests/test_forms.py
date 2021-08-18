@@ -36,16 +36,20 @@ class TaskCreateFormTests(TestCase):
             'group': self.group.pk,
 
         }
-        response1 = self.authorized_client.post(
+        response = self.authorized_client.post(
             reverse('posts:post_create'),
             data=form_data,
             follow=True
         )
 
+        self.assertEqual(response.context.get('page_obj')[1].text,
+                         'Тест текст')
+        self.assertEqual(response.context.get('page_obj')[1].group, self.group)
+
         self.assertEqual(Post.objects.count(), 2)
         self.assertRedirects(
-            response1, reverse('posts:profile',
-                               kwargs={'username': self.user.username}))
+            response, reverse('posts:profile',
+                              args=(self.user.username,)))
 
     def test_form_edit(self):
         """Проверка изменения записи в базе данных."""
@@ -57,16 +61,17 @@ class TaskCreateFormTests(TestCase):
 
         }
 
-        response2 = self.authorized_client.post(
+        response = self.authorized_client.post(
             reverse('posts:post_edit',
-                    kwargs={'post_id': self.post.pk}),
+                    args=(self.post.pk,)),
             data=form_data,
             follow=True
         )
 
-        self.assertEqual(response2.context.get('post').text, 'Тест')
+        self.assertEqual(response.context.get('post').text, 'Тест')
+        self.assertEqual(response.context.get('post').group, self.group)
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertRedirects(
-            response2, reverse('posts:post_detail',
-                               kwargs={'post_id': self.post.pk})
+            response, reverse('posts:post_detail',
+                              args=(self.post.pk,))
         )

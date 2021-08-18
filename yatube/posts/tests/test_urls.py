@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from posts.models import Group, Post
@@ -22,11 +24,9 @@ class PostsURLTest(TestCase):
         )
 
     def setUp(self):
-        # Создаем неавторизованный клиент
+
         self.guest_client = Client()
-        # Создаем второй клиент
         self.authorized_client = Client()
-        # Авторизуем пользователя
         self.authorized_client.force_login(self.user)
 
     def test_urls_uses_correct_template(self):
@@ -35,13 +35,17 @@ class PostsURLTest(TestCase):
         """
 
         url = {
-            self.guest_client.get('/'): 200,
-            self.guest_client.get('/group/test-slug/'): 200,
-            self.guest_client.get('/profile/auth/'): 200,
-            self.guest_client.get(f'/posts/{self.post.pk}/'): 200,
-            self.authorized_client.get('/create/'): 200,
-            self.authorized_client.get(f'/posts/{self.post.pk}/edit/'): 200,
-            self.guest_client.get('/unexisting_page/'): 404,
+            self.guest_client.get('/'): HTTPStatus.OK,
+            self.guest_client.get(f'/group/{self.group.slug}/'): HTTPStatus.OK,
+            self.guest_client.get(f'/profile/{self.user.username}/'
+                                  ): HTTPStatus.OK,
+            self.guest_client.get(f'/posts/{self.post.pk}/'): HTTPStatus.OK,
+            self.authorized_client.get('/create/'
+                                       ): HTTPStatus.OK,
+            self.authorized_client.get(f'/posts/{self.post.pk}/edit/'
+                                       ): HTTPStatus.OK,
+            self.guest_client.get('/unexisting_page/'
+                                  ): HTTPStatus.NOT_FOUND,
         }
         for adress, response in url.items():
             with self.subTest(adress=adress):
@@ -49,11 +53,11 @@ class PostsURLTest(TestCase):
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
-        # Шаблоны по адресам
+
         url_names = {
             '/': 'posts/index.html',
-            '/group/test-slug/': 'posts/group_list.html',
-            '/profile/auth/': 'posts/profile.html',
+            f'/group/{self.group.slug}/': 'posts/group_list.html',
+            f'/profile/{self.user.username}/': 'posts/profile.html',
             f'/posts/{self.post.pk}/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
             f'/posts/{self.post.pk}/edit/': 'posts/create_post.html',
