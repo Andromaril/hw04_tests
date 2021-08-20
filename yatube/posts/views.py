@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
+
 from posts.forms import PostForm
 
 from .models import Group, Post
@@ -99,8 +100,7 @@ def post_edit(request, post_id):
     else:
         form = PostForm(request.POST or None, instance=post)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.save()
+            post = form.save()
             return redirect('posts:post_detail', post_id)
     return render(request, 'posts/create_post.html',
                   {"form": form, 'post': post, "is_edit": is_edit, })

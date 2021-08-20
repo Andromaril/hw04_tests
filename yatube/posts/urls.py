@@ -1,4 +1,5 @@
 from django.urls import path
+
 from posts.views import (group_posts, index, post_create, post_edit, post_view,
                          profile)
 

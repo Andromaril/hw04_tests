@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from posts.forms import PostForm
 from posts.models import Group, Post
 
@@ -43,7 +44,7 @@ class TaskCreateFormTests(TestCase):
         )
 
         self.assertEqual(response.context.get('page_obj')[1].text,
-                         'Тест текст')
+                         form_data.get('text'))
         self.assertEqual(response.context.get('page_obj')[1].group, self.group)
 
         self.assertEqual(Post.objects.count(), 2)
@@ -68,7 +69,8 @@ class TaskCreateFormTests(TestCase):
             follow=True
         )
 
-        self.assertEqual(response.context.get('post').text, 'Тест')
+        self.assertEqual(response.context.get('post').text,
+                         form_data.get('text'))
         self.assertEqual(response.context.get('post').group, self.group)
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertRedirects(

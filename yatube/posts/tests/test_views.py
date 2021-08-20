@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from posts.models import Group, Post
 
 User = get_user_model()
@@ -59,7 +60,7 @@ class PostsURLTest(TestCase):
         response = self.guest_client.get(reverse('posts:index'))
 
         self.assertEqual(response.context['page_obj'][0].text,
-                         'Тестовая группа')
+                         self.post.text)
         self.assertEqual(response.context['page_obj'][0].author, self.user)
         self.assertEqual(response.context['page_obj'][0].group, self.group)
 
@@ -70,16 +71,16 @@ class PostsURLTest(TestCase):
                                                  args=(self.group.slug,)))
 
         self.assertEqual(response.context['page_obj'][0].text,
-                         'Тестовая группа')
+                         self.post.text)
         self.assertEqual(response.context['page_obj'][0].author,
                          self.user)
         self.assertEqual(response.context['page_obj'][0].group,
                          self.group)
 
-        self.assertEqual(response.context['group'].title, 'Тестовая группа')
-        self.assertEqual(response.context['group'].slug, 'test-slug')
+        self.assertEqual(response.context['group'].title, self.group.title)
+        self.assertEqual(response.context['group'].slug, self.group.slug)
         self.assertEqual(response.context['group'].description,
-                         'Тестовое описание')
+                         self.group.description)
 
     def test_profile_correct_context(self):
         """Шаблон profile сформирован с правильным контекстом."""
@@ -90,10 +91,11 @@ class PostsURLTest(TestCase):
         self.assertEqual(response.context['page_obj'][0].author,
                          self.user)
         self.assertEqual(response.context['page_obj'][0].text,
-                         'Тестовая группа')
+                         self.post.text)
         self.assertEqual(response.context['page_obj'][0].group, self.group)
 
-        self.assertEqual(response.context['author'].username, 'auth')
+        self.assertEqual(response.context['author'].username,
+                         self.user.username)
 
         self.assertEqual(response.context['count'], 1)
 
@@ -104,7 +106,7 @@ class PostsURLTest(TestCase):
                                                       args=(self.post.pk,)))
 
         self.assertEqual(response.context.get('post').author, self.user)
-        self.assertEqual(response.context.get('post').text, 'Тестовая группа')
+        self.assertEqual(response.context.get('post').text, self.post.text)
         self.assertEqual(response.context.get('post').group, self.group)
         self.assertEqual(response.context.get('count'), 1)
 
@@ -129,7 +131,7 @@ class PostsURLTest(TestCase):
                                                       args=(self.group.pk,)))
 
         self.assertTrue(response.context.get('is_edit'))
-        self.assertEqual(response.context.get('post').text, 'Тестовая группа')
+        self.assertEqual(response.context.get('post').text, self.post.text)
         self.assertEqual(response.context.get('post').author, self.user)
         self.assertEqual(response.context.get('post').group, self.group)
 
@@ -160,7 +162,7 @@ class PostsURLTest(TestCase):
                 response = self.guest_client.get(post_url)
 
                 self.assertEqual(response.context['page_obj'][0].text,
-                                 'Тестовая группа')
+                                 self.post.text)
                 self.assertEqual(response.context['page_obj'][0].author,
                                  self.user)
                 self.assertEqual(response.context['page_obj'][0].group,
